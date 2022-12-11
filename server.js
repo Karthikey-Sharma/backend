@@ -44,6 +44,6 @@ app.get('/getMultiplication/:num1/:num2' , function(req , res){
 app.listen(3000 , function(){
     console.log("server started at port 3000")
 })
-console.log("hello hi");
+console.log("hello hi from the server");
 
 
