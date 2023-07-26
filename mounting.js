@@ -1,12 +1,17 @@
 let express = require('express');
 const app = express();
+const mongoose = require('mongoose');
 // middleware function-> post , front->json
 app.use(express.json())
 app.listen(3000);
 
+// Password = 1r4iUm6EaxeZkky8   Username = admin
+
 // mini app
 const userRouter = express.Router();
+const authRouter = express.Router();
 app.use("/users" , userRouter);
+app.use('/auth' , authRouter);
 
 userRouter
           .route("/")
@@ -18,6 +23,12 @@ userRouter
 userRouter
           .route("/:id")
           .get(getUserById)
+
+authRouter
+          .route("/signup")
+          .get(getSignUp)
+          .post(postSignUp)
+
 let users = [
           {
                     "Name" : "Jasbir",
@@ -81,3 +92,62 @@ function getUserById(req , res){
           console.log("User id is" , req.params.id);
           res.send("User id is recieved");
 }
+
+function getSignUp(req , res){
+          res.sendFile('/public/index.html',{root:__dirname})
+}
+
+function postSignUp(req , res){
+          let obj = req.body;
+          console.log("backend" , obj);
+          res.json({
+                    message : "User Signed up" , 
+                    data : obj
+          });
+}
+const db_link = 'mongodb+srv://admin:1r4iUm6EaxeZkky8@cluster0.jxlhgv9.mongodb.net/?retryWrites=true&w=majority'
+mongoose.connect(db_link)
+.then(function(db){
+          //console.log(db);
+          console.log("DataBase Connected");
+})
+.catch(function(err){
+          console.log(err);
+})
+
+const userSchema = mongoose.Schema({
+          name : {
+                    type : String,
+                    required : true
+          },
+          email : {
+                    type : String,
+                    required : true,
+                    unique : true
+          },
+          password : {
+                    type : String ,
+                    required : true,
+                    minLength : 8
+          },
+          confirmPassword : {
+                    type : String ,
+                    required : true,
+                    minLength : 8
+          }
+});
+
+// model
+const userModel = mongoose.model('userModel' , userSchema);
+
+(async function createUser(){
+          let user = {
+                    name : "Parul",
+                    email : "abcde@gmail.com",
+                    password : "12345678",
+                    confirmPassword : "12345678"
+          };
+          let data = await userModel.create(user);
+          console.log(data)
+
+})();
