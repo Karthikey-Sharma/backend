@@ -4,6 +4,20 @@ const app = express();
 app.use(express.json())
 app.listen(3000);
 
+// mini app
+const userRouter = express.Router();
+app.use("/users" , userRouter);
+
+userRouter
+          .route("/")
+          .get(getUser)
+          .post(postUser)
+          .patch(patchUser)
+          .delete(deleteUser)
+
+userRouter
+          .route("/:id")
+          .get(getUserById)
 let users = [
           {
                     "Name" : "Jasbir",
@@ -24,22 +38,25 @@ let users = [
           }
 ];
 
-app.get('/users' , (req , res)=>{
+function getUser(req , res){
           console.log(req.query);
           res.send(users);
-});
+}
+
 // frontend ->backend 
-app.post('/users' , (req, res)=>{
+function postUser (req, res){
           console.log(req.body);
           users = req.body;
           res.json({
                     message : "data recieved",
                     user : req.body
           })
-});
+}
+
+
 
 // update -> patch
-app.patch('/users' , (req , res)=>{
+function patchUser(req , res){
           console.log("req ki body ka data ->" ,req.body);
           // update data in users object
           let dataToBeUpdated = req.body;
@@ -49,18 +66,18 @@ app.patch('/users' , (req , res)=>{
           res.json({
                     message : "data updated successfully"
           })
-})
+}
 // delete
-app.delete('/users' , (req , res)=>{
+function deleteUser(req , res){
           users = {};
           res.json({
                     message : "deleted succesfully"
           })
-});
+};
 
 // parameters => /:id
 
-app.get("/users/:id" , (req, res)=>{
+function getUserById(req , res){
           console.log("User id is" , req.params.id);
           res.send("User id is recieved");
-})
+}
